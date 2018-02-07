@@ -1,0 +1,9 @@
+.vs
+build_*
+build
+install_*
+install
+idasdk*
+build-*
+dist
+.DS_Store

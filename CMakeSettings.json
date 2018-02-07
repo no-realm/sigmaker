@@ -1,0 +1,57 @@
+{
+    // See https://go.microsoft.com//fwlink//?linkid=834763 for more information about this file.
+    "environments": [
+        { "build_root": "${projectDir}\\build_${name}" },
+        { "install_root": "${projectDir}\\install_${name}" },
+        { "idaq_path": "A:\\IDA 7.0" },
+        { "ida_sdk": "${projectDir}/idasdk70" },
+        { "ida_version": "700" },
+        { "cmake_args": "-DIDA_SDK=${env.ida_sdk} -DIDA_VERSION=${env.ida_version} -DIDA_BINARY_64=ON -DIDA_INSTALL_DIR=\"${env.idaq_path}\""}
+    ],
+    "configurations": [
+        {
+            "name": "x86-Debug",
+            "generator": "Ninja",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${env.build_root}",
+            "installRoot": "${env.idaq_path}",
+            "cmakeCommandArgs": "${env.cmake_args}",
+            "buildCommandArgs": "-v",
+            "ctestCommandArgs": ""
+        },
+        {
+            "name": "x86-Release",
+            "generator": "Ninja",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${env.build_root}",
+            "installRoot": "${env.idaq_path}",
+            "cmakeCommandArgs": "${env.cmake_args}",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        },
+        {
+            "name": "x64-Debug",
+            "generator": "Ninja",
+            "configurationType": "Debug",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${env.build_root}",
+            "installRoot": "${env.idaq_path}",
+            "cmakeCommandArgs": "${env.cmake_args} -DIDA_EA_64=ON",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        },
+        {
+            "name": "x64-Release",
+            "generator": "Ninja",
+            "configurationType": "RelWithDebInfo",
+            "inheritEnvironments": [ "msvc_x64_x64" ],
+            "buildRoot": "${env.build_root}",
+            "installRoot": "${env.idaq_path}",
+            "cmakeCommandArgs": "${env.cmake_args} -DIDA_EA_64=ON",
+            "buildCommandArgs": "",
+            "ctestCommandArgs": ""
+        }
+    ]
+}
