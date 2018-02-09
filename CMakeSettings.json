@@ -6,7 +6,7 @@
         { "idaq_path": "A:\\IDA 7.0" },
         { "ida_sdk": "${projectDir}/idasdk70" },
         { "ida_version": "700" },
-        { "cmake_args": "-DIDA_SDK=${env.ida_sdk} -DIDA_VERSION=${env.ida_version} -DIDA_BINARY_64=ON -DIDA_INSTALL_DIR=\"${env.idaq_path}\""}
+        { "cmake_args": "-DIDA_SDK=${env.ida_sdk} -DIDA_VERSION=${env.ida_version} -DIDA_BINARY_64=ON -DIDA_INSTALL_DIR=\"${env.idaq_path}\" -DCMAKE_PREFIX_PATH=C:/Qt/5.10.0/msvc2017_64"}
     ],
     "configurations": [
         {

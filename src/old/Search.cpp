@@ -1,9 +1,10 @@
 #include "Misc.h"
+#include "pro.h"
 
 bool HasOneHitSig( qSigVector& vecSig )
 {
-    for (qSigVector::iterator i = vecSig.begin( ); i != vecSig.end( ); i++)
-        if ((*i).iHitCount == 1)
+    for (auto& i : vecSig)
+        if (i.iHitCount == 1)
             return true;
 
     return false;
@@ -12,16 +13,18 @@ bool HasOneHitSig( qSigVector& vecSig )
 int GetOccurenceCount( const qstring& strSig, bool bSkipOut = false )
 {
     int iCount = 0;
+    msg("checking sig: %s\n", strSig.c_str( ));
     ea_t dwAddress = find_binary( inf.min_ea, inf.max_ea, strSig.c_str( ), 16, SEARCH_DOWN );
 
     if (IsValidEA( dwAddress ))
     {
         do
         {
-            if (bSkipOut == true && iCount >= 2)
+            if (bSkipOut && iCount >= 2)
                 return iCount;
 
             iCount++;
+            msg("checking sig: %s\n", strSig.c_str( ));
             dwAddress = find_binary( dwAddress + 1, inf.max_ea, strSig.c_str( ), 16, SEARCH_DOWN );
         } while (IsValidEA( dwAddress ));
     }
@@ -32,9 +35,11 @@ int GetOccurenceCount( const qstring& strSig, bool bSkipOut = false )
         {
             do
             {
-                if (bSkipOut == true && iCount >= 2)
+                if (bSkipOut && iCount >= 2)
                     return iCount;
+
                 iCount++;
+                msg("checking sig: %s\n", strSig.c_str( ));
                 dwAddress = find_binary( dwAddress + 1, inf.omax_ea, strSig.c_str( ), 16, SEARCH_DOWN );
             } while (IsValidEA( dwAddress ));
         }

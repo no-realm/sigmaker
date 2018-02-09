@@ -52,7 +52,7 @@ void ShowSearchDialog( const char* pszSignature, const char* pszMask );
 void CreateSig( SigType eType );
 void GenerateSig( SigType eType );
 bool AutoGenerate( qSigVector& vecSig, ea_t dwAddress );
-bool AddOneInstructionToSig( qstring& strSig, ea_t& dwCurentAddress );
+//bool AddOneInstructionToSig( qstring& strSig, ea_t& dwCurentAddress );
 void AddInsToSig( insn_t *cmd, qstring& strSig );
 bool MatchOperands( insn_t *cmd, unsigned int uiOperand, unsigned int uiSize );
 unsigned int getCurrentOpcodeSize( insn_t *cmd, unsigned int& uiCount );

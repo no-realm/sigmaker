@@ -7,3 +7,4 @@ idasdk*
 build-*
 dist
 .DS_Store
+ida-cmake

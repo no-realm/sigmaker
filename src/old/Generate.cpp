@@ -212,28 +212,34 @@ bool AutoGenerate( qSigVector& refvecSig, ea_t dwAddress )
             return false;
         }
 
-        for (qSigVector::iterator i = vecSig.begin( ); i != vecSig.end( ); i++)
+        for (qSigVector::iterator i = vecSig.begin( ); i != vecSig.end( );)
         {
-            if (AddOneInstructionToSig( (*i).strSig, (*i).dwCurrentAddress ) == false)
+            if (!::AddOneInstructionToSig(i->strSig, i->dwCurrentAddress))
             {
                 if (Settings.iLogLevel >= 2)
                 {
                     msg( "dropped a sig due to decompilation failure.\n" );
                 }
 
-                if (vecSig.size( ) < 1)
+                if (vecSig.empty())
                 {
                     hide_wait_box( );
                     msg( "not enough candidates to proceed. aborting...\n" );
                     return false;
                 }
-                vecSig.erase( i );
+
+                i = vecSig.erase( i );
                 continue;
             }
-            (*i).iOpCount++;
-            (*i).iHitCount = ((*i).strSig.length( ) > 5) ? GetOccurenceCount( (*i).strSig, true ) : 0;
+            else
+            {
+                ++i;    
+            }
+
+            i->iOpCount++;
+            i->iHitCount = (i->strSig.length( ) > 5) ? GetOccurenceCount( i->strSig, true ) : 0;
         }
-    } while (HasOneHitSig( vecSig ) == false);
+    } while (!HasOneHitSig(vecSig));
 
     refvecSig.clear( );
 

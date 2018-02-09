@@ -1,21 +1,23 @@
 cmake_minimum_required(VERSION 3.1)
 project(sigmaker C CXX)
 
+set(IDA_ENABLE_QT_SUPPORT ON CACHE BOOL "")
 include("ida-cmake/cmake/IDA.cmake")
 
 list(APPEND HEADERS
-    "${CMAKE_CURRENT_LIST_DIR}/src/Includes.h"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Misc.h")
+    "src/Core.hpp"
+    "src/PluginConfig.hpp"
+    "src/Settings.hpp"
+    "src/Utils.hpp"
+)
 
 list(APPEND SOURCES
-    "${CMAKE_CURRENT_LIST_DIR}/src/Converter.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Generate.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Main.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Misc.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Platform.cpp"
-    "${CMAKE_CURRENT_LIST_DIR}/src/Search.cpp")
+    "src/Core.cpp"
+    "src/Settings.cpp"
+    "src/sigmaker.cpp"
+)
 
 # Add IDA plugin target
-include_directories("src")
-add_ida_plugin(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES})
-target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC "-std=c++11")
+#include_directories("src")
+add_ida_qt_plugin(${CMAKE_PROJECT_NAME} ${HEADERS} ${SOURCES})
+target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC "/wd4267")
