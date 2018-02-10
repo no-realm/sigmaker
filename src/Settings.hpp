@@ -1,7 +1,6 @@
 #ifndef SETTINGS_HPP
 #define SETTINGS_HPP
 
-#include <QString>
 #include <QSettings>
 
 // ============================================================================================= //
@@ -15,10 +14,10 @@ public:
     virtual ~Settings() = default;
 
     // Constants.
-    static const QString iSelectionType;
-    static const QString iMaxRefCount;
-    static const QString iKeepUnsafeData;
-    static const QString iLogLevel;
+    static const QString selection_type;
+    static const QString max_ref_count;
+    static const QString keep_unsafe_data;
+    static const QString log_level;
 };
 
 // ============================================================================================= //

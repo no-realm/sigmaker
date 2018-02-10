@@ -8,7 +8,17 @@ namespace Utils
 // sigmaker related functions                                                                    //
 // ============================================================================================= //
 
+    /**
+     * \brief Checks for valid address.
+     * \param x address to be checked.
+     */
+    #define IS_VALID_EA( x ) (x != 0 && x != BADADDR)
 
+    #ifdef __EA64__
+        #define ADDR "[ 1%X ]"
+    #else
+        #define ADDR "[ %X ]"
+    #endif
 
 // ============================================================================================= //
 // [NonCopyable]                                                                                 //

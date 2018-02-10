@@ -30,21 +30,21 @@ public:
     /**
      * @brief   Initialises the plugin.
      */
-    void initPlugin() const;
+    static void init_plugin();
     /**
      * @brief   Runs the plugin.
      */
-    void runPlugin();
+    static void run_plugin();
 protected:
     /**
      * @brief   Opens the options dialog.
      */
-    void openOptionsDialog();
+    static void open_options_dialog();
 
     /**
      * \brief   Opens the settings dialog.
      */
-    static void openSettingsDialog();
+    static void open_settings_dialog();
 };
 
 // ============================================================================================= //

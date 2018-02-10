@@ -23,7 +23,7 @@ int idaapi init()
 
     try
     {
-        Core::instance().initPlugin();
+        Core::instance().init_plugin();
     }
     catch (const std::runtime_error &e)
     {
@@ -43,7 +43,7 @@ int idaapi init()
     void idaapi run(int)
 #endif
 {
-    Core::instance().runPlugin();
+    Core::instance().run_plugin();
 #if IDP_INTERFACE_VERSION >= 700
     return true;
 #endif

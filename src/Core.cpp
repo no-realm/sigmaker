@@ -2,56 +2,59 @@
 
 #include "PluginConfig.hpp"
 #include "Settings.hpp"
+#include "Generator.hpp"
+#include "Searcher.hpp"
 
-//#include <ida.hpp>
 #include <idp.hpp>
+
 
 // ============================================================================================= //
 // [Core]                                                                                        //
 // ============================================================================================= //
 
-void Core::initPlugin() const
+void Core::init_plugin()
 {
     Settings settings;
 
-    auto logLevelVar = settings.value(Settings::iLogLevel, 1);
-    auto logLevel = 1;
+    auto log_level_var = settings.value(Settings::log_level, 1);
+    auto log_level = 1;
 
-    if (logLevelVar.canConvert<int>()) logLevel = logLevelVar.toInt();
-    else settings.remove(Settings::iLogLevel);
+    if (log_level_var.canConvert<int>()) log_level = log_level_var.toInt();
+    else settings.remove(Settings::log_level);
 
-    if (logLevel >= 3)
+    if (log_level >= 3)
     {
-        auto selectionTypeVar = settings.value(Settings::iSelectionType, 1);
-        auto maxRefCountVar = settings.value(Settings::iMaxRefCount, 1);
-        auto keepUnsafeDataVar = settings.value(Settings::iKeepUnsafeData, 0);
+        auto selection_type_var = settings.value(Settings::selection_type, 0);
+        auto max_ref_count_var = settings.value(Settings::max_ref_count, 0);
+        auto keep_unsafe_data_var = settings.value(Settings::keep_unsafe_data, 1);
 
-        auto selectionType = 0;
-        auto maxRefCount = 0;
-        auto keepUnsafeData = 0;
+        auto selection_type = 0;
+        auto max_ref_count = 0;
+        auto keep_unsafe_data = 1;
 
-        if (selectionTypeVar.canConvert<int>()) selectionType = selectionTypeVar.toInt();
-        else settings.remove(Settings::iSelectionType);
+        if (selection_type_var.canConvert<int>()) selection_type = selection_type_var.toInt();
+        else settings.remove(Settings::selection_type);
 
-        if (maxRefCountVar.canConvert<int>()) maxRefCount = maxRefCountVar.toInt();
-        else settings.remove(Settings::iMaxRefCount);
+        if (max_ref_count_var.canConvert<int>()) max_ref_count = max_ref_count_var.toInt();
+        else settings.remove(Settings::max_ref_count);
 
-        if (keepUnsafeDataVar.canConvert<int>()) keepUnsafeData = keepUnsafeDataVar.toInt();
-        else settings.remove(Settings::iKeepUnsafeData);
+        if (keep_unsafe_data_var.canConvert<int>()) keep_unsafe_data = keep_unsafe_data_var.toInt();
+        else settings.remove(Settings::keep_unsafe_data);
 
         msg("[" PLUGIN_NAME "] Current Settings:\n");
-        msg("-    Selection Type: %i", selectionType);
-        msg("-    Max Reference Count: %i", maxRefCount);
-        msg("-    Keep Unsafe Data: %i", keepUnsafeData);
+        msg("-    Selection Type: %i\n", selection_type);
+        msg("-    Max Reference Count: %i\n", max_ref_count);
+        msg("-    Keep Unsafe Data: %i\n", keep_unsafe_data);
+        msg("-    Log Level: %i\n", log_level);
     }
 }
 
-void Core::runPlugin()
+void Core::run_plugin()
 {
-    openOptionsDialog();
+    open_options_dialog();
 }
 
-void Core::openOptionsDialog()
+void Core::open_options_dialog()
 {
     auto selected_action = 0;
 
@@ -73,35 +76,35 @@ void Core::openOptionsDialog()
     {
         switch (selected_action)
         {
-        //case 0:
-        //    GenerateSig( SIG_IDA );
-        //    break;
-        //case 1:
-        //    GenerateSig( SIG_CODE );
-        //    break;
-        //case 2:
-        //    GenerateSig( SIG_CRC );
-        //    break;
-        //case 3: 
-        //    CreateSig( SIG_IDA );
-        //    break;
-        //case 4: 
-        //    CreateSig( SIG_CODE );
-        //    break;
-        //case 5: 
-        //    CreateSig( SIG_CRC );
-        //    break;
-        //case 6: 
-        //    ShowSearchWindow( );
-        //    break;
-        //case 7: 
-        //    ShowSearchDialog( );
-        //    break;
+        case 0:
+            generator::generate_sig(sig::ida);
+            break;
+        case 1:
+            generator::generate_sig(sig::code);
+            break;
+        case 2:
+            generator::generate_sig(sig::crc);
+            break;
+        case 3: 
+            generator::create_sig(sig::ida);
+            break;
+        case 4: 
+            generator::create_sig(sig::code);
+            break;
+        case 5: 
+            generator::create_sig(sig::crc);
+            break;
+        case 6: 
+            searcher::open_ida_search();
+            break;
+        case 7: 
+            searcher::open_code_search();
+            break;
         //case 8: 
         //    ShowSigConverter( );
         //    break;
         case 9: 
-            openSettingsDialog();
+            open_settings_dialog();
             break;
         default:
             break;;
@@ -109,55 +112,68 @@ void Core::openOptionsDialog()
     }
 }
 
-void Core::openSettingsDialog()
+void Core::open_settings_dialog()
 {
     Settings settings;
-    char szBuffer[MAXSTR] = { 0 };
 
-    auto selectionTypeVar = settings.value(Settings::iSelectionType, 1);
-    auto maxRefCountVar = settings.value(Settings::iMaxRefCount, 1);
-    auto keepUnsafeDataVar = settings.value(Settings::iKeepUnsafeData, 0);
-    auto logLevelVar = settings.value(Settings::iLogLevel, 1);
+    auto selection_type_var = settings.value(Settings::selection_type, 0u);
+    auto max_ref_count_var = settings.value(Settings::max_ref_count, 0);
+    auto keep_unsafe_data_var = settings.value(Settings::keep_unsafe_data, 1u);
+    auto log_level_var = settings.value(Settings::log_level, 1u);
 
-    auto selectionType = 0;
-    auto maxRefCount = 0;
-    auto keepUnsafeData = 0;
-    auto logLevel = 1;
+    ushort selection_answ = 0;
+    sval_t max_ref_answ = 0;
+    ushort keep_unsafe_answ = 1;
+    ushort log_level_answ = 1;
 
-    if (selectionTypeVar.canConvert<int>()) selectionType = selectionTypeVar.toInt();
-    else settings.remove(Settings::iSelectionType);
+    if (selection_type_var.canConvert<ushort>()) selection_answ = selection_type_var.toUInt();
+    else settings.remove(Settings::selection_type);
 
-    if (maxRefCountVar.canConvert<int>()) maxRefCount = maxRefCountVar.toInt();
-    else settings.remove(Settings::iMaxRefCount);
+    if (max_ref_count_var.canConvert<sval_t>()) max_ref_answ = max_ref_count_var.toLongLong();
+    else settings.remove(Settings::max_ref_count);
 
-    if (keepUnsafeDataVar.canConvert<int>()) keepUnsafeData = keepUnsafeDataVar.toInt();
-    else settings.remove(Settings::iKeepUnsafeData);
+    if (keep_unsafe_data_var.canConvert<ushort>()) keep_unsafe_answ = keep_unsafe_data_var.toUInt();
+    else settings.remove(Settings::keep_unsafe_data);
 
-    if (logLevelVar.canConvert<int>()) logLevel = logLevelVar.toInt();
-    else settings.remove(Settings::iLogLevel);
+    if (log_level_var.canConvert<ushort>()) log_level_answ = log_level_var.toUInt();
+    else settings.remove(Settings::log_level);
 
-    const int form_result = ask_form( 
-        PLUGIN_NAME ": Setttings\n"
-        "<#Choose the best sig from total length:R>\n" // 0
-        "<#Choose the best sig from the amount of opcodes:R>\n" // 1
-        "<#Choose the best sig by the smallest amount of wildcards:R>>\n" // 2
-        "<Maximum refs for auto generation:A:20:10::>\n"
-        "<#Add only relilable data to sigs(choose if unsure):R>\n" // 0
-        "<#Include unsafe data in sigs(may produce better results):R>>\n" // 1
-        "<#Disable logging:R>\n" // 0
-        "<#Log results:R>\n" // 1
-        "<#Log errors and results:R>\n" // 2
-        "<#Log errors, results and interim steps of all proceedures:R>>\n" // 3
-        , &selectionType, szBuffer, &keepUnsafeData, &logLevel );
+    msg("[" PLUGIN_NAME "] Current Settings:\n");
+    msg("-    Selection Type: %i\n", selection_answ);
+    msg("-    Max Reference Count: %i\n", max_ref_answ);
+    msg("-    Keep Unsafe Data: %i\n", keep_unsafe_answ);
+    msg("-    Log Level: %i\n", log_level_answ);
+
+    const auto form_result = ask_form( 
+        "BUTTON YES Save\n"
+        PLUGIN_NAME ": Setttings\n\n"
+        "<##Auto Generation##Choose the best sig from total length:R>\n"    // 0
+        "<Choose the best sig from the amount of opcodes:R>\n"              // 1
+        "<Choose the best sig by the smallest amount of wildcards:R>>\n"    // 2
+        
+        "<Maximum refs for auto generation:D:20:10::>\n"                    // Decimal number
+        
+        "<##Data##Add only relilable data to sigs(choose if unsure):R>\n"   // 0
+        "<Include unsafe data in sigs(may produce better results):R>>\n"    // 1
+
+        "<##Logging##Disable logging:R>\n"                                  // 0
+        "<Log results:R>\n"                                                 // 1
+        "<Log errors and results:R>\n"                                      // 2
+        "<Log errors, results and interim steps of all proceedures:R>>\n"   // 3
+        , &selection_answ, &max_ref_answ, &keep_unsafe_answ, &log_level_answ);
 
     if (form_result > 0)
     {
-        qsscanf(szBuffer, "%i", &maxRefCount); 
+        msg("[" PLUGIN_NAME "] Current Settings:\n");
+        msg("-    Selection Type: %i\n", selection_answ);
+        msg("-    Max Reference Count: %i\n", max_ref_answ);
+        msg("-    Keep Unsafe Data: %i\n", keep_unsafe_answ);
+        msg("-    Log Level: %i\n", log_level_answ);
 
-        settings.setValue(Settings::iSelectionType, selectionType);
-        settings.setValue(Settings::iMaxRefCount, maxRefCount);
-        settings.setValue(Settings::iKeepUnsafeData, keepUnsafeData);
-        settings.setValue(Settings::iLogLevel, logLevel);
+        settings.setValue(Settings::selection_type, selection_answ);
+        settings.setValue(Settings::max_ref_count, max_ref_answ);
+        settings.setValue(Settings::keep_unsafe_data, keep_unsafe_answ);
+        settings.setValue(Settings::log_level, log_level_answ);
     }
 }
 
