@@ -4,6 +4,7 @@
 #include "PluginConfig.hpp"
 #include "Settings.hpp"
 #include "Generator.hpp"
+#include "Converter.hpp"
 
 #include <search.hpp>
 
@@ -11,10 +12,11 @@ void
 searcher::open_ida_search()
 {
     static const char form_str[] =
-        "Test Sig\n"
+        "BUTTON YES Test\n"
+        PLUGIN_NAME ": Signature Tester\n"
         "\n"
         "\n"
-        "  <Signature:A5:100:100::>\n"
+        "  <Signature:A5::100::>\n"
         "\n";
 
     qstring sig_str;
@@ -87,9 +89,7 @@ searcher::open_code_search()
     if (sig_str.length() < 3)
         return;
 
-    // TODO: Add conversion call
-    //IDAToCode(sig_str, sig_code_str, mask);
-
+    converter::ida_to_code(sig_str, sig_code_str, mask);
     qstrncpy(signature, sig_code_str.c_str(), sizeof(signature));
     open_code_search(signature, mask);
 }
@@ -98,11 +98,12 @@ void
 searcher::open_code_search(const char* sig_str, const char* mask_str)
 {
     static const char form_str[] =
-        "Test Sig\n"
+        "BUTTON YES Test\n"
+        PLUGIN_NAME ": Signature Tester\n"
         "\n"
         "\n"
-        "  <Signature:A5:100:100::>\n"
-        "  <Mask:A6:100:100::>\n"
+        "  <Signature:A5::100::>\n"
+        "  <Mask:A6::100::>\n"
         "\n";
 
     char signature[MAXSTR] = {0}, mask[MAXSTR] = {0};
@@ -120,16 +121,15 @@ searcher::open_code_search(const char* sig_str, const char* mask_str)
 
         Settings settings;
 
-        auto log_level_var = settings.value(Settings::log_level, 1);
-        auto log_level = 1;
+        auto log_level_var = settings.value(Settings::log_level, 2u);
+        ushort log_level = 2u;
 
-        if (log_level_var.canConvert<int>()) log_level = log_level_var.toInt();
+        if (log_level_var.canConvert<ushort>()) log_level = log_level_var.toUInt();
         else settings.remove(Settings::log_level);
 
         //msg("%s %s\n", signature, mask);
 
-        // TODO: Add Conversion call
-        //CodeToIDAC(_sig_str, signature, mask);
+        converter::code_to_idac(_sig_str, signature, mask);
 
         if (log_level >= 3)
             msg("%s = %s %s\n", _sig_str.c_str(), signature, mask);
@@ -155,10 +155,10 @@ searcher::get_occurrence_count(const qstring& sig_str, const bool skip_out)
     size_t count = 0u;
     Settings settings;
 
-    auto log_level_var = settings.value(Settings::log_level, 1);
-    auto log_level = 1;
+    auto log_level_var = settings.value(Settings::log_level, 2u);
+    ushort log_level = 2u;
 
-    if (log_level_var.canConvert<int>()) log_level = log_level_var.toInt();
+    if (log_level_var.canConvert<ushort>()) log_level = log_level_var.toUInt();
     else settings.remove(Settings::log_level);
 
     auto current_address = find_binary(inf.min_ea, inf.max_ea, sig_str.c_str(), 16, SEARCH_DOWN);
@@ -210,10 +210,10 @@ searcher::search_for_sig(const qstring& sig_str)
 {
     Settings settings;
 
-    auto log_level_var = settings.value(Settings::log_level, 1);
-    auto log_level = 1;
+    auto log_level_var = settings.value(Settings::log_level, 2u);
+    ushort log_level = 2u;
 
-    if (log_level_var.canConvert<int>()) log_level = log_level_var.toInt();
+    if (log_level_var.canConvert<ushort>()) log_level = log_level_var.toUInt();
     else settings.remove(Settings::log_level);
 
     auto current_address = find_binary(inf.min_ea, inf.max_ea, sig_str.c_str(), 16, SEARCH_DOWN);

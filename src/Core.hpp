@@ -45,6 +45,11 @@ protected:
      * \brief   Opens the settings dialog.
      */
     static void open_settings_dialog();
+
+    /**
+     * \brief   Resets the plugin settings.
+     */
+    static void reset_settings();
 };
 
 // ============================================================================================= //

@@ -4,6 +4,7 @@
 #include "Settings.hpp"
 #include "PluginConfig.hpp"
 #include "Searcher.hpp"
+#include "Converter.hpp"
 
 #include <idp.hpp>
 
@@ -27,10 +28,10 @@ generator::create_sig(const sig::sig_format_t sig_format)
     ea_t start_address, end_address;
     Settings settings;
 
-    auto log_level_var = settings.value(Settings::log_level, 1);
-    auto log_level = 1;
+    auto log_level_var = settings.value(Settings::log_level, 2u);
+    ushort log_level = 2u;
 
-    if (log_level_var.canConvert<int>()) log_level = log_level_var.toInt();
+    if (log_level_var.canConvert<ushort>()) log_level = log_level_var.toUInt();
     else settings.remove(Settings::log_level);
 
     if (!read_range_selection(get_current_viewer(), &start_address, &end_address))
@@ -65,23 +66,21 @@ generator::create_sig(const sig::sig_format_t sig_format)
     qstring tmp_str;
     char mask[MAXSTR];
 
-    // TODO: Add Converter call
     switch (sig_format)
     {
     case sig::ida:
         break;
     case sig::code:
-        //IDAToCode(sig_str, tmp_str, mask);
+        converter::ida_to_code(sig_str, tmp_str, mask);
         sig_str.sprnt("%s, %s", tmp_str.c_str(), mask);
         break;
     case sig::crc:
-        //IDAToCRC(sig_str, start_address, end_address);
+        converter::ida_to_crc(sig_str, start_address, end_address);
         sig_str.sprnt("0x%X, 0x%X", start_address, end_address);
         break;
     }
 
-    // TODO: Add clipboard call
-    //TextToClipboard(sig_str.c_str());
+    Utils::text_to_clipboard(sig_str.c_str());
 
     if (log_level >= 1)
     {
@@ -108,16 +107,16 @@ generator::generate_sig(const sig::sig_format_t sig_format)
     size_t sig_length = 9999;
     Settings settings;
 
-    auto log_level_var = settings.value(Settings::log_level, 1);
-    auto selection_type_var = settings.value(Settings::selection_type, 0);
+    auto log_level_var = settings.value(Settings::log_level, 2u);
+    auto selection_type_var = settings.value(Settings::selection_type, 0u);
 
-    auto log_level = 1;
-    auto selection_type = 0;
+    ushort log_level = 2u;
+    ushort selection_type = 0u;
 
-    if (log_level_var.canConvert<int>()) log_level = log_level_var.toInt();
+    if (log_level_var.canConvert<ushort>()) log_level = log_level_var.toUInt();
     else settings.remove(Settings::log_level);
 
-    if (selection_type_var.canConvert<int>()) selection_type = selection_type_var.toInt();
+    if (selection_type_var.canConvert<ushort>()) selection_type = selection_type_var.toUInt();
     else settings.remove(Settings::selection_type);
 
     const auto selected_address = get_screen_ea();
@@ -165,24 +164,21 @@ generator::generate_sig(const sig::sig_format_t sig_format)
     char mask[MAXSTR];
     ea_t start_address = 0u, end_address = 0u;
 
-    // TODO: Add Convertion call
-
     switch (sig_format)
     {
     case sig::ida:
         break;
     case sig::code:
-        //IDAToCode( sig_str, tmp_str, mask );
+        converter::ida_to_code( sig_str, tmp_str, mask );
         sig_str.sprnt("%s, %s", tmp_str.c_str(), mask);
         break;
     case sig::crc:
-        //IDAToCRC( sig_str, start_address, end_address );
+        converter::ida_to_crc( sig_str, start_address, end_address );
         sig_str.sprnt("0x%X, 0x%X", start_address, end_address);
         break;
     }
 
-    // TODO: Add clipboard call
-    //TextToClipboard(sig_str.c_str());
+    Utils::text_to_clipboard(sig_str.c_str());
 
     if (log_level >= 1)
     {
@@ -287,19 +283,19 @@ auto_generate_sig(sig::vec& sigs, const ea_t address)
     // Clear previous signatures
     sigs.clear();
     sig::vec _sigs;
-    size_t total_count = 0;
+    sval_t total_count = 0;
     Settings settings;
 
-    auto log_level_var = settings.value(Settings::log_level, 1);
-    auto max_ref_count_var = settings.value(Settings::max_ref_count, 0u);
+    auto log_level_var = settings.value(Settings::log_level, 2u);
+    auto max_ref_count_var = settings.value(Settings::max_ref_count, 0ull);
 
-    auto log_level = 1;
-    auto max_ref_count = 0u;
+    ushort log_level = 2u;
+    sval_t max_ref_count = 0;
 
-    if (log_level_var.canConvert<int>()) log_level = log_level_var.toInt();
+    if (log_level_var.canConvert<ushort>()) log_level = log_level_var.toUInt();
     else settings.remove(Settings::log_level);
 
-    if (max_ref_count_var.canConvert<uint>()) max_ref_count = max_ref_count_var.toUInt();
+    if (max_ref_count_var.canConvert<sval_t>()) max_ref_count = max_ref_count_var.toLongLong();
     else settings.remove(Settings::max_ref_count);
 
     // This is just a check to see whether the function is valid code
@@ -370,7 +366,7 @@ auto_generate_sig(sig::vec& sigs, const ea_t address)
                     , current_address);
         }
     }
-    else if (log_level >= 2) msg("[" PLUGIN_NAME "] Invalid Function!\n");
+    else if (log_level >= 3) msg("[" PLUGIN_NAME "] Invalid Function!\n");
 
     if (log_level >= 3) msg("[" PLUGIN_NAME "] Added a total of %i candidate(s).\n", total_count - 1);
 
@@ -423,9 +419,9 @@ match_operands(insn_t* cmd, uint operand, uint op_size)
     if (!IS_VALID_EA(get_first_dref_from(cmd->ea))) return false;
 
     Settings settings;
-    auto keep_unsafe_data_var = settings.value(Settings::keep_unsafe_data, 1);
-    auto keep_unsafe_data = 1;
-    if (keep_unsafe_data_var.canConvert<int>()) keep_unsafe_data = keep_unsafe_data_var.toInt();
+    auto keep_unsafe_data_var = settings.value(Settings::keep_unsafe_data, 1u);
+    ushort keep_unsafe_data = 1u;
+    if (keep_unsafe_data_var.canConvert<ushort>()) keep_unsafe_data = keep_unsafe_data_var.toUInt();
     else settings.remove(Settings::keep_unsafe_data);
 
     if (keep_unsafe_data != 0)

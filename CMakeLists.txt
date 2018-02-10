@@ -5,6 +5,7 @@ set(IDA_ENABLE_QT_SUPPORT ON CACHE BOOL "")
 include("ida-cmake/cmake/IDA.cmake")
 
 list(APPEND HEADERS
+    "src/Converter.hpp"
     "src/Core.hpp"
     "src/Generator.hpp"
     "src/PluginConfig.hpp"
@@ -15,11 +16,13 @@ list(APPEND HEADERS
 )
 
 list(APPEND SOURCES
+    "src/Converter.cpp"
     "src/Core.cpp"
     "src/Generator.cpp"
     "src/Searcher.cpp"
     "src/Settings.cpp"
     "src/sigmaker.cpp"
+    "src/Utils.cpp"
 )
 
 # Add IDA plugin target
