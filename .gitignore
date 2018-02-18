@@ -8,3 +8,5 @@ build-*
 dist
 .DS_Store
 ida-cmake
+.vscode/*.bat
+.cmaketools.json
